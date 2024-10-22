@@ -6,7 +6,7 @@ from utility.enumerations import EnvironmentalRisk
 from utility.riskInterfaces import RiskGetter
 
 
-# Load the shapefile (this automatically loads the .dbf file as well)
+# Shapefiles path
 FLOOD_SHAPEFILE_PATH_LOW = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\LPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_bassa.shp"
 FLOOD_SHAPEFILE_PATH_MEDIUM = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\MPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_media.shp"
 FLOOD_SHAPEFILE_PATH_HIGH = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\HPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_elevata.shp"

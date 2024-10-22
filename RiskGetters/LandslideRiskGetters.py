@@ -6,13 +6,13 @@ from utility.enumerations import EnvironmentalRisk
 from utility.riskInterfaces import RiskGetter
 
 
-# Load the shapefile (this automatically loads the .dbf file as well)
+# Shapefile path
 LANDSLIDE_SHAPEFILE_PATH = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_2021_aree_pericolosita_frana_PAI\Mosaicatura_ISPRA_2020_2021_aree_pericolosita_frana_PAI.shp"
 
 class LandslideRiskMap(RiskGetter):
     ''' Return the landslide risk indicator for a specific location using a shapefile representing the geographic map areas and associated risk values'''
 
-    def __init__(self, map_path_: str):
+    def __init__(self, map_path: str):
         self.map = gpd.read_file(map_path)
 
         self.risk_levels = ['Aree di Attenzione AA', 'Moderata P1', 'Media P2', 'Elevata P3', 'Molto elevata P4']
