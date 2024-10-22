@@ -95,4 +95,10 @@ class FloodRiskMap(RiskGetter):
 
 
 
+risk_getter = FloodRiskMap(FLOOD_SHAPEFILE_PATH_LOW, FLOOD_SHAPEFILE_PATH_MEDIUM, FLOOD_SHAPEFILE_PATH_HIGH)
+lat = 44.405650
+lon = 8.946256
+risk = risk_getter.get_risk(lon, lat)
+print(f" Flood Risk Level: {risk.value}")
 
+risk_getter.plot(lon, lat)

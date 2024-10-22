@@ -1,6 +1,5 @@
 import rasterio
 import matplotlib.pyplot as plt
-from rasterio.plot import show
 import numpy as np
 import matplotlib.colors as mcolors
 from utility.enumerations import EnvironmentalRisk
@@ -18,7 +17,7 @@ class SeismicRiskMap(RiskGetter):
         self.pga_ranges = [0.00, 0.01, 0.02, 0.03, 0.05, 0.08, 0.13, 0.20, 0.35, 0.55, 0.90, 1.50]
         self.labels = [
             "Very Low 1", "Very Low 2", "Very Low 3", "Low 1", "Low 2",
-            "Low 3", "Medium 2", "Medium 3", "High 1", "High 2", "High 3"
+            "Low 3", "Medium 1", "Medium 2", "High 1", "High 2", "High 3"
         ]
 
         # Define variables for plots
@@ -170,7 +169,13 @@ class SeismicRiskMap(RiskGetter):
 
 
 
+risk_getter = SeismicRiskMap(SEISMIC_RASTERFILE_PATH)
+lat = 39.298263
+lon = 16.253736
+#risk = risk_getter.get_risk(lon, lat)
+#print(f" Seismic Risk Level: {risk}")
 
+risk_getter.plot_from_bounds(0.5, 1.5)
 
 
 
