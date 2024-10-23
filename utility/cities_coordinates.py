@@ -1,26 +1,23 @@
 import csv
 import requests
+from haversine import haversine, Unit
 import time
-
-# Replace with your actual OpenWeather API key
-API_KEY = '4c4853d32ca66defd0f20d907498dc2c'
-
-# Base URL for the OpenWeather Geocoding API
-BASE_URL = "http://api.openweathermap.org/geo/1.0/direct"
+from constants import *
 
 
-# Function to get coordinates for a given city, state, and country
-def get_coordinates(city, state, country):
+
+def get_coordinates(city: str, state: str, country: str)-> tuple:
+    ''' Return the geographic coordinates (Latitude, Longitude) of a city by calling the Openweathermap API'''
     try:
         # Prepare the request URL
         params = {
             'q': f"{city},{country}",
             'limit': 1,
-            'appid': API_KEY
+            'appid': OPENWHEATHER_API_KEY
         }
 
         # Send the GET request
-        response = requests.get(BASE_URL, params=params)
+        response = requests.get(OPENWHEATHER_BASE_URL, params=params)
 
         # If the response is successful (status code 200)
         if response.status_code == 200:
@@ -39,8 +36,9 @@ def get_coordinates(city, state, country):
         return None, None
 
 
-# Function to process the CSV and get coordinates for each city
-def process_csv(input_csv, output_csv):
+
+def process_csv(input_csv: str, output_csv: str):
+    ''' Process the input csv and write the output csv which contains the coordinates for each city '''
     with open(input_csv, 'r', newline='', encoding='utf-8') as infile, open(output_csv, 'w', newline='',
                                                                             encoding='utf-8') as outfile:
         # Read the CSV
@@ -53,20 +51,57 @@ def process_csv(input_csv, output_csv):
         # Iterate through each row in the input CSV
         for row in reader:
             adm2_code, city, adm1_code, state, adm0_code, country = row
-            if (country == "Italy"):
 
+            if country == "Italy":
                 # Fetch the coordinates using the OpenWeather API
                 latitude, longitude = get_coordinates(city, state, "IT")
 
+                if not any(l is None for l in (latitude, longitude)):
                 # Add the coordinates to the row
-                writer.writerow([adm2_code, city, adm1_code, state, adm0_code, country, latitude, longitude])
+                    writer.writerow([adm2_code, city, adm1_code, state, adm0_code, country, latitude, longitude])
 
-            # Respect the API rate limit (you may need to adjust this based on your API plan)
+
             #time.sleep(1)  # Sleep for 1 second between requests to avoid hitting API limits
 
 
+
+def find_closest_city(latitude: float, longitude: float, cities_file: str) -> tuple[str, str]:
+    ''' Return the closest city (and associated administrative unit code) to the geographical coordinates (longitude,latitude)'''
+    closest_city = None
+    min_distance = float('inf')  # Initialize with a very large number
+
+    with open(cities_file, 'r', newline='', encoding='utf-8') as file:
+        reader = csv.reader(file, delimiter=';')
+        next(reader)  # Skip the header row
+
+        for row in reader:
+            adm2_code, city, adm1_code, state, adm0_code, country, city_latitude, city_longitude = row
+            # Convert latitude and longitude to float
+            city_latitude = float(city_latitude)
+            city_longitude = float(city_longitude)
+
+            # Calculate the distance between the input coordinates and the city's coordinates
+            distance = haversine((latitude, longitude), (city_latitude, city_longitude), unit=Unit.KILOMETERS)
+
+            # Check if this city is closer than the previous closest one
+            if distance < min_distance:
+                min_distance = distance
+                closest_city = (adm2_code, city)
+
+    # Return the closest city's administrative unit 2 code and city name
+    return closest_city
+
+def read_file_main():
+    input_csv = CITIES  # Input CSV file containing the cities
+    output_csv = CITIES_WITH_COORDINATES  # Output CSV file to store cities with coordinates
+    process_csv(input_csv, output_csv)
+
+def find_city_main():
+    latitude = 45.611946 #Castellanza (Varese)
+    longitude = 8.898276 #Castellanza (Varese)
+    cities_file = CITIES_WITH_COORDINATES
+    print(find_closest_city(latitude, longitude, cities_file))
+
 # Main function to run the script
 if __name__ == '__main__':
-    input_csv = 'ADM2_TH.csv'  # Input CSV file containing the cities
-    output_csv = 'cities_with_coordinates.csv'  # Output CSV file to store results
-    process_csv(input_csv, output_csv)
+    read_file_main()

@@ -2,10 +2,9 @@ import rasterio
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.colors as mcolors
-from utility.enumerations import EnvironmentalRisk
-from utility.riskInterfaces import RiskGetter
-
-SEISMIC_RASTERFILE_PATH = r"C:\Users\farac\Downloads\GEM-GSHM_PGA-475y-rock_v2023\v2023_1_pga_475_rock_3min.tif"
+from RiskGetters.enumerations import EnvironmentalRisk
+from RiskGetters.riskInterfaces import RiskGetter
+from utility.constants import *
 
 class SeismicRiskMap(RiskGetter):
     ''' Return the seismic risk indicator for a specific location using a raster file representing the geographic map areas and associated risk values'''

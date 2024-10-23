@@ -3,21 +3,18 @@ from abc import ABC
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
-from utility.enumerations import EnvironmentalRisk
-from utility.riskInterfaces import RiskGetter
-
-
-# Shapefiles path
-FLOOD_SHAPEFILE_PATH_LOW = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\LPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_bassa.shp"
-FLOOD_SHAPEFILE_PATH_MEDIUM = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\MPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_media.shp"
-FLOOD_SHAPEFILE_PATH_HIGH = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\HPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_elevata.shp"
+from RiskGetters.enumerations import EnvironmentalRisk
+from RiskGetters.riskInterfaces import RiskGetter
+from utility.constants import *
 
 
 class FloodRiskGetter(RiskGetter, ABC):
     pass
 
-class FloodRiskMap(RiskGetter):
-    ''' Return the flood risk indicator for a specific location using 3 shapefile representing the low, medium and high risk geographic map areas '''
+
+
+class FloodRiskMap(FloodRiskGetter):
+    ''' Class that return the flood risk indicator for a specific location using 3 shapefile representing the low, medium and high risk geographic map areas '''
 
     def __init__(self, map_path_low: str, map_path_medium: str, map_path_high: str):
         self.map_low = gpd.read_file(map_path_low)
@@ -96,12 +93,16 @@ class FloodRiskMap(RiskGetter):
         plt.title("Shapefile and Point Location")
         plt.show()
 
-class FloodRiskThAPI(FloodRiskGetter):
 
+
+class FloodRiskThAPI(FloodRiskGetter):
+    ''' Class that return the flood risk by accessing the ThinkHazard API'''
 
 
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
-        pass
+        ''' Return the flood risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
+
+
 
 
 def main():

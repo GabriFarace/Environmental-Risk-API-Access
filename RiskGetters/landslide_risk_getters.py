@@ -3,13 +3,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
-from utility.enumerations import EnvironmentalRisk
-from utility.riskInterfaces import RiskGetter
+from RiskGetters.enumerations import EnvironmentalRisk
+from RiskGetters.riskInterfaces import RiskGetter
+from utility.constants import *
 
 
-
-# Shapefile path
-LANDSLIDE_SHAPEFILE_PATH = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_2021_aree_pericolosita_frana_PAI\Mosaicatura_ISPRA_2020_2021_aree_pericolosita_frana_PAI.shp"
 
 class LandslideRiskMap(RiskGetter):
     ''' Return the landslide risk indicator for a specific location using a shapefile representing the geographic map areas and associated risk values'''
