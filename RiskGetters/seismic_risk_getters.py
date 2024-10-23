@@ -12,6 +12,7 @@ class SeismicRiskMap(RiskGetter):
 
     def __init__(self, map_path: str):
         self.map_path = map_path
+        self.map = rasterio.open(self.map_path)
 
         # Define the PGA ranges and labels
         self.pga_ranges = [0.00, 0.01, 0.02, 0.03, 0.05, 0.08, 0.13, 0.20, 0.35, 0.55, 0.90, 1.50]
@@ -44,38 +45,40 @@ class SeismicRiskMap(RiskGetter):
         self.norm = mcolors.BoundaryNorm(boundaries=self.pga_ranges, ncolors=len(self.rgb_colors))
 
 
+    def __del__(self):
+        # Ensure the file is closed when the object is destroyed
+        if self.map:
+            self.map.close()
 
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
         ''' Return the seismic risk by extracting the Peak Ground Acceleration for the geographic location given by (latitude, longitude) from the map and using thresholds similar to those used by the ThinkHazard API to assess the risk level'''
+        transform = self.map.transform
 
-        with rasterio.open(self.map_path) as src:
-            transform = src.transform
+        # Calculate the column and row using the affine transformation
+        col = int((longitude - transform.c) / transform.a)
+        row = int((latitude - transform.f) / transform.e)
 
-            # Calculate the column and row using the affine transformation
-            col = int((longitude - transform.c) / transform.a)
-            row = int((latitude - transform.f) / transform.e)
+        # Ensure the row and col are within bounds of the raster
+        if not (0 <= col < self.map.width and 0 <= row < self.map.height):
+            return EnvironmentalRisk.NO_DATA
+        else:
+            # Convert world coordinates to raster pixel coordinates
+            row, col = self.map.index(longitude, latitude)
 
-            # Ensure the row and col are within bounds of the raster
-            if not (0 <= col < src.width and 0 <= row < src.height):
+            # Read the raster value at the specific location
+            pga_value = self.map.read(1)[row, col]
+
+            if pga_value == self.map.nodata:
                 return EnvironmentalRisk.NO_DATA
             else:
-                # Convert world coordinates to raster pixel coordinates
-                row, col = src.index(longitude, latitude)
-
-                # Read the raster value at the specific location
-                pga_value = src.read(1)[row, col]
-
-                if pga_value == src.nodata:
-                    return EnvironmentalRisk.NO_DATA
+                if pga_value < 0.03:
+                    return EnvironmentalRisk.VERY_LOW
+                elif pga_value < 0.13:
+                    return EnvironmentalRisk.LOW
+                elif pga_value < 0.35:
+                    return EnvironmentalRisk.MEDIUM
                 else:
-                    if pga_value < 0.03:
-                        return EnvironmentalRisk.VERY_LOW
-                    elif pga_value < 0.13:
-                        return EnvironmentalRisk.LOW
-                    elif pga_value < 0.35:
-                        return EnvironmentalRisk.MEDIUM
-                    else:
-                        return EnvironmentalRisk.HIGH
+                    return EnvironmentalRisk.HIGH
 
 
 
@@ -84,98 +87,100 @@ class SeismicRiskMap(RiskGetter):
 
 
         # Read the first band of the raster
-        with rasterio.open(self.map_path) as src:
 
-            fig, ax = plt.subplots(figsize=(10, 10))
+        fig, ax = plt.subplots(figsize=(10, 10))
 
-            # Read raster data
-            raster_data = src.read(1)
+        # Read raster data
+        raster_data = self.map.read(1)
 
-            # Get raster bounds
-            bounds = src.bounds  # (left, bottom, right, top) in degrees
+        # Get raster bounds
+        bounds = self.map.bounds  # (left, bottom, right, top) in degrees
 
-            # Plot the raster using imshow with the correct extent and aspect ratio
-            img = ax.imshow(raster_data, cmap=self.cmap, norm=self.norm,
-                            extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
-                            origin='upper')
+        # Plot the raster using imshow with the correct extent and aspect ratio
+        img = ax.imshow(raster_data, cmap=self.cmap, norm=self.norm,
+                        extent=[bounds.left, bounds.right, bounds.bottom, bounds.top],
+                        origin='upper')
 
-            # Add a colorbar with custom tick labels
-            cbar = plt.colorbar(img, ax=ax, boundaries=self.pga_ranges[:-1], ticks=self.pga_ranges[:-1],
-                                spacing='uniform')
-            cbar.ax.set_yticklabels(self.labels)
-            cbar.set_label('Risk Levels', rotation=270, labelpad=20)
+        # Add a colorbar with custom tick labels
+        cbar = plt.colorbar(img, ax=ax, boundaries=self.pga_ranges[:-1], ticks=self.pga_ranges[:-1],
+                            spacing='uniform')
+        cbar.ax.set_yticklabels(self.labels)
+        cbar.set_label('Risk Levels', rotation=270, labelpad=20)
 
-            # Plot the point (in geographic coordinates) on the map
-            ax.plot(longitude, latitude, 'ro', markersize=4)  # 'ro' for red circle
+        # Plot the point (in geographic coordinates) on the map
+        ax.plot(longitude, latitude, 'ro', markersize=4)  # 'ro' for red circle
 
-            plt.title("PGA Location on the GEM Seismic Hazard Map")
-            plt.xlabel('Longitude')
-            plt.ylabel('Latitude')
-            plt.show()
+        plt.title("PGA Location on the GEM Seismic Hazard Map")
+        plt.xlabel('Longitude')
+        plt.ylabel('Latitude')
+        plt.show()
 
 
     def plot_from_bounds(self, lower_bound: float, upper_bound: float):
         ''' Plot the map and the points for which the PGA (Peak Ground Acceleration) is in the interval [lower_bound, upper_bound]'''
+        # Read the raster data
+        raster_data = self.map.read(1)
+        transform = self.map.transform
 
-        with rasterio.open(self.map_path) as src:
-            # Read the raster data
-            raster_data = src.read(1)
-            transform = src.transform
+        # Identify the NoData value (if applicable)
+        nodata_value = self.map.nodata
 
-            # Identify the NoData value (if applicable)
-            nodata_value = src.nodata
+        # Mask the NoData values (if needed)
+        if nodata_value is not None:
+            raster_data = np.ma.masked_equal(raster_data, nodata_value)
 
-            # Mask the NoData values (if needed)
-            if nodata_value is not None:
-                raster_data = np.ma.masked_equal(raster_data, nodata_value)
+        # Find indices where the values are within the specified range
+        target_indices = np.where((raster_data >= lower_bound) & (raster_data <= upper_bound))
 
-            # Find indices where the values are within the specified range
-            target_indices = np.where((raster_data >= lower_bound) & (raster_data <= upper_bound))
+        # Convert pixel indices to geographical coordinates
+        coordinates = []
+        for row, col in zip(*target_indices):
+            # Convert row, col (pixel) to x, y (coordinates)
+            x, y = transform * (col, row)  # (col, row) to (x, y)
+            coordinates.append((x, y))
 
-            # Convert pixel indices to geographical coordinates
-            coordinates = []
-            for row, col in zip(*target_indices):
-                # Convert row, col (pixel) to x, y (coordinates)
-                x, y = transform * (col, row)  # (col, row) to (x, y)
-                coordinates.append((x, y))
+        # Set up the plot with a larger figure size
+        fig, ax = plt.subplots(figsize=(15, 15))  # Increased size
 
-            # Set up the plot with a larger figure size
-            fig, ax = plt.subplots(figsize=(15, 15))  # Increased size
+        # Plot the raster using the custom colormap and normalization
+        img = ax.imshow(raster_data, cmap=self.cmap, norm=self.norm,
+                        extent=(self.map.bounds.left, self.map.bounds.right, self.map.bounds.bottom, self.map.bounds.top))
 
-            # Plot the raster using the custom colormap and normalization
-            img = ax.imshow(raster_data, cmap=self.cmap, norm=self.norm,
-                            extent=(src.bounds.left, src.bounds.right, src.bounds.bottom, src.bounds.top))
+        # Add a colorbar with non-proportional tick spacing
+        cbar = plt.colorbar(img, ax=ax, boundaries=self.pga_ranges, ticks=self.pga_ranges[:-1], spacing='uniform')
+        cbar.ax.set_yticklabels(self.labels)  # Set the correct number of labels
 
-            # Add a colorbar with non-proportional tick spacing
-            cbar = plt.colorbar(img, ax=ax, boundaries=self.pga_ranges, ticks=self.pga_ranges[:-1], spacing='uniform')
-            cbar.ax.set_yticklabels(self.labels)  # Set the correct number of labels
+        # Add a title to the colorbar for risk levels
+        cbar.set_label('Risk Levels', rotation=270, labelpad=20)
 
-            # Add a title to the colorbar for risk levels
-            cbar.set_label('Risk Levels', rotation=270, labelpad=20)
+        # Plot the extracted points on the map
+        if coordinates:  # Check if any coordinates were found
+            lon, lat = zip(*coordinates)
+            ax.scatter(lon, lat, color='red', marker='o', label='PGA > 0.90', s=0.0001)  # Plot points in red
+            ax.legend()  # Show legend
 
-            # Plot the extracted points on the map
-            if coordinates:  # Check if any coordinates were found
-                lon, lat = zip(*coordinates)
-                ax.scatter(lon, lat, color='red', marker='o', label='PGA > 0.90', s=0.0001)  # Plot points in red
-                ax.legend()  # Show legend
+        # Set plot labels
+        plt.title("Seismic Hazard Map with PGA Levels", fontsize=18)
+        plt.xlabel("Longitude", fontsize=14)
+        plt.ylabel("Latitude", fontsize=14)
 
-            # Set plot labels
-            plt.title("Seismic Hazard Map with PGA Levels", fontsize=18)
-            plt.xlabel("Longitude", fontsize=14)
-            plt.ylabel("Latitude", fontsize=14)
-
-            # Show the plot
-            plt.show()
+        # Show the plot
+        plt.show()
 
 
+def main():
+    risk_getter = SeismicRiskMap(SEISMIC_RASTERFILE_PATH)
+    lat = 39.298263
+    lon = 16.253736
+    #risk = risk_getter.get_risk(lon, lat)
+    #print(f" Seismic Risk Level: {risk}")
 
-risk_getter = SeismicRiskMap(SEISMIC_RASTERFILE_PATH)
-lat = 39.298263
-lon = 16.253736
-#risk = risk_getter.get_risk(lon, lat)
-#print(f" Seismic Risk Level: {risk}")
+    risk_getter.plot_from_bounds(0.5, 1.5)
 
-risk_getter.plot_from_bounds(0.5, 1.5)
+    del risk_getter
+
+if __name__ == "__main__":
+    main()
 
 
 

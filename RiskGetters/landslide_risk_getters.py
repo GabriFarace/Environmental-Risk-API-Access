@@ -89,10 +89,17 @@ class LandslideRiskMap(RiskGetter):
         plt.title("Shapefile and Point Location")
         plt.show()
 
-risk_getter = LandslideRiskMap(LANDSLIDE_SHAPEFILE_PATH)
-lat = 45.734955
-lon = 7.313076
-risk = risk_getter.get_risk(lon, lat)
-print(f" Ladslide Risk Level: {risk.value}")
 
-risk_getter.plot(lon, lat)
+
+
+def main() :
+    risk_getter = LandslideRiskMap(LANDSLIDE_SHAPEFILE_PATH)
+    lat = 45.734955
+    lon = 7.313076
+    risk = risk_getter.get_risk(lon, lat)
+    print(f" Ladslide Risk Level: {risk.value}")
+
+    risk_getter.plot(lon, lat)
+
+if __name__ == "__main__":
+    main()

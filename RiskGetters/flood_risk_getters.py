@@ -1,4 +1,5 @@
 import geopandas as gpd
+from abc import ABC
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
@@ -11,6 +12,9 @@ FLOOD_SHAPEFILE_PATH_LOW = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_are
 FLOOD_SHAPEFILE_PATH_MEDIUM = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\MPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_media.shp"
 FLOOD_SHAPEFILE_PATH_HIGH = r"C:\Users\farac\Downloads\Mosaicatura_ISPRA_2020_aree_pericolosita_idraulica\HPH_Mosaicatura_ISPRA_2020_pericolosita_idraulica_elevata.shp"
 
+
+class FloodRiskGetter(RiskGetter, ABC):
+    pass
 
 class FloodRiskMap(RiskGetter):
     ''' Return the flood risk indicator for a specific location using 3 shapefile representing the low, medium and high risk geographic map areas '''
@@ -92,13 +96,23 @@ class FloodRiskMap(RiskGetter):
         plt.title("Shapefile and Point Location")
         plt.show()
 
+class FloodRiskThAPI(FloodRiskGetter):
 
 
 
-risk_getter = FloodRiskMap(FLOOD_SHAPEFILE_PATH_LOW, FLOOD_SHAPEFILE_PATH_MEDIUM, FLOOD_SHAPEFILE_PATH_HIGH)
-lat = 44.405650
-lon = 8.946256
-risk = risk_getter.get_risk(lon, lat)
-print(f" Flood Risk Level: {risk.value}")
+    def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
+        pass
 
-risk_getter.plot(lon, lat)
+
+def main():
+    risk_getter = FloodRiskMap(FLOOD_SHAPEFILE_PATH_LOW, FLOOD_SHAPEFILE_PATH_MEDIUM, FLOOD_SHAPEFILE_PATH_HIGH)
+    lat = 44.405650
+    lon = 8.946256
+    risk = risk_getter.get_risk(lon, lat)
+    print(f" Flood Risk Level: {risk.value}")
+
+    risk_getter.plot(lon, lat)
+
+
+if __name__ == "__main__":
+    main()
