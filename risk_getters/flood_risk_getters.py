@@ -3,8 +3,8 @@ from abc import ABC
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
-from risk_getters.enumerations import EnvironmentalRisk
-from risk_getters.riskInterfaces import RiskGetter
+from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
+from risk_getters.riskInterfaces import RiskGetter, RiskManager
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from utility.constants import *
 
@@ -100,8 +100,8 @@ class FloodRiskThAPI(FloodRiskGetter):
     ''' Class that return the flood risk by accessing the ThinkHazard API'''
 
     def __init__(self, api: ThinkHazardAPI):
-        self.RISK_TYPE_1 = "River flood"
-        self.RISK_TYPE_2 = "Urban flood"
+        self.RISK_TYPE_1 = EnvironmentalRiskType.FLOOD_RIVER_RISK
+        self.RISK_TYPE_2 = EnvironmentalRiskType.FLOOD_URBAN_RISK
         self.api = api
 
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:

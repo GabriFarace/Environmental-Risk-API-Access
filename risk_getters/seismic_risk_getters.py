@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.colors as mcolors
 
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
-from risk_getters.enumerations import EnvironmentalRisk
+from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
 from risk_getters.riskInterfaces import RiskGetter
 from utility.constants import *
 
@@ -179,7 +179,7 @@ class SeismicRiskThAPI(SeismicRiskGetter):
     ''' Class that return the seismic  risk by accessing the ThinkHazard API'''
 
     def __init__(self, api: ThinkHazardAPI):
-        self.RISK_TYPE = "Earthquake"
+        self.RISK_TYPE = EnvironmentalRiskType.SEISMIC_RISK
         self.api = api
 
 

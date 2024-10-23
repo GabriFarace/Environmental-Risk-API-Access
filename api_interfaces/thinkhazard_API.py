@@ -1,6 +1,6 @@
 import requests
 import threading
-from risk_getters.enumerations import EnvironmentalRisk
+from risk_getters.enumerations import *
 from utility.cities_coordinates import find_closest_city
 from utility.constants import *
 
@@ -9,9 +9,8 @@ class ThinkHazardAPI:
     def __init__(self):
         # current data mantains for a day the hazard risk indicators for a particular location given by (longitude, latitude)
         self.current_data = {} # Keys = (longitude, latitude) values = {risk_type : hazard_level,...}
-        self.hazard_level_enum_map = {"Very Low" : EnvironmentalRisk.VERY_LOW, "Low" : EnvironmentalRisk.LOW, "Medium" : EnvironmentalRisk.MEDIUM, "High" : EnvironmentalRisk.HIGH}
 
-    def get_risk_level(self, longitude: float, latitude: float, risk_type: str):
+    def get_risk_level(self, longitude: float, latitude: float, risk_type: EnvironmentalRiskType):
         ''' Return the risk level of a specific risk_type of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
 
         # If data is not already available then fetch it from the API
@@ -29,7 +28,7 @@ class ThinkHazardAPI:
 
                 # Step 3: extract and return the hazard level associated to the requested risk_type
                 if hazard_data:
-                    hazard_dict = {item['hazardtype']['hazardtype']: self.hazard_level_enum_map[item['hazardlevel']['title']] for item in hazard_data}
+                    hazard_dict = {HAZARD_TYPES_ENUM_MAP[item['hazardtype']['hazardtype']]: HAZARD_LEVEL_ENUM_MAP[item['hazardlevel']['title']] for item in hazard_data}
                     self.current_data[(longitude, latitude)] =  hazard_dict
 
                     # Reset the current data for this location after 1 day
