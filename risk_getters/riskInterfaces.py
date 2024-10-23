@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import Dict, List
-from enumerations import EnvironmentalRiskType
-from risk_getters.enumerations import EnvironmentalRisk
+from enumerations import EnvironmentalRiskType, EnvironmentalRisk
 
 class RiskGetter(ABC):
 
@@ -14,7 +13,7 @@ class RiskGetter(ABC):
 
 class RiskManager:
     ''' The Risk Manager deals with the different risk getters and return the risk indicators for each risk type'''
-    def __init__(self, risk_getters_per_type: Dict[EnvironmentalRiskType, List[EnvironmentalRiskType.value]]):
+    def __init__(self, risk_getters_per_type: Dict[EnvironmentalRiskType, List[RiskGetter]]):
 
         # For each risk type there is a list of list getters
         self.risk_getters_per_type = risk_getters_per_type

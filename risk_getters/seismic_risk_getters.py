@@ -202,10 +202,6 @@ def main():
 
     del risk_getter
 
-if __name__ == "__main__":
-    main()
-
-
 
 
 

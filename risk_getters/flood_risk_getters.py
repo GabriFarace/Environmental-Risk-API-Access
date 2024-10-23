@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
 from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
-from risk_getters.riskInterfaces import RiskGetter, RiskManager
+from risk_getters.riskInterfaces import RiskGetter
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from utility.constants import *
 
@@ -126,6 +126,3 @@ def main():
 
     risk_getter.plot(lon, lat)
 
-
-if __name__ == "__main__":
-    main()

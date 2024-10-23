@@ -118,5 +118,3 @@ def main() :
 
     risk_getter.plot(lon, lat)
 
-if __name__ == "__main__":
-    main()

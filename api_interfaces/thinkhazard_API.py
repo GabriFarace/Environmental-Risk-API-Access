@@ -28,7 +28,7 @@ class ThinkHazardAPI:
 
                 # Step 3: extract and return the hazard level associated to the requested risk_type
                 if hazard_data:
-                    hazard_dict = {HAZARD_TYPES_ENUM_MAP[item['hazardtype']['hazardtype']]: HAZARD_LEVEL_ENUM_MAP[item['hazardlevel']['title']] for item in hazard_data}
+                    hazard_dict = {HAZARD_TYPES_ENUM_MAP[item['hazardtype']['hazardtype']]: HAZARD_LEVEL_ENUM_MAP[item['hazardlevel']['title']] for item in hazard_data if item['hazardtype']['hazardtype'] in HAZARD_TYPES_ENUM_MAP.keys()}
                     self.current_data[(longitude, latitude)] =  hazard_dict
 
                     # Reset the current data for this location after 1 day
