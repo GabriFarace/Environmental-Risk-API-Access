@@ -1,4 +1,6 @@
 from abc import ABC, abstractmethod
+
+from api_interfaces import thinkhazard_API
 from risk_getters.enumerations import EnvironmentalRisk
 
 class RiskGetter(ABC):
@@ -7,3 +9,4 @@ class RiskGetter(ABC):
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
         ''' Return the environmental risk associated to the given longitude and latitude.'''
         pass
+

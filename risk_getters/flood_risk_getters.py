@@ -105,21 +105,7 @@ class FloodRiskThAPI(FloodRiskGetter):
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
         ''' Return the flood risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
 
-        hazard_level = thinkhazard_API.get_risk_level(longitude, latitude, self.RISK_TYPE)
-
-        if not hazard_level:
-            return EnvironmentalRisk.NO_DATA
-        elif hazard_level == "Very Low":
-            return EnvironmentalRisk.VERY_LOW
-        elif hazard_level == "Low":
-            return EnvironmentalRisk.LOW
-        elif hazard_level == "Medium":
-            return EnvironmentalRisk.MEDIUM
-        elif hazard_level == "High":
-            return EnvironmentalRisk.HIGH
-        else:
-            return EnvironmentalRisk.NO_DATA
-
+        return thinkhazard_API.get_risk_level(longitude, latitude, self.RISK_TYPE)
 
 
 
