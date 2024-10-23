@@ -1,15 +1,20 @@
+from abc import ABC
 import geopandas as gpd
 import pandas as pd
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
+
+from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from risk_getters.enumerations import EnvironmentalRisk
 from risk_getters.riskInterfaces import RiskGetter
 from utility.constants import *
 
 
+class LandslideRiskGetter(RiskGetter, ABC):
+    pass
 
-class LandslideRiskMap(RiskGetter):
+class LandslideRiskMap(LandslideRiskGetter):
     ''' Return the landslide risk indicator for a specific location using a shapefile representing the geographic map areas and associated risk values'''
 
     def __init__(self, map_path: str):
@@ -86,6 +91,20 @@ class LandslideRiskMap(RiskGetter):
         point_gdf.plot(ax=ax, color='blue', markersize=10)
         plt.title("Shapefile and Point Location")
         plt.show()
+
+
+class LandslideRiskThAPI(LandslideRiskGetter):
+    ''' Class that return the landslide risk by accessing the ThinkHazard API'''
+
+    def __init__(self, api: ThinkHazardAPI):
+        self.RISK_TYPE = "Landslide"
+        self.api = api
+
+
+    def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
+        ''' Return the landslide risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
+
+        return self.api.get_risk_level(longitude, latitude, self.RISK_TYPE)
 
 
 

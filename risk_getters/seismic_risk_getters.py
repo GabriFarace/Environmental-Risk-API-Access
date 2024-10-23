@@ -1,10 +1,18 @@
+from abc import ABC
+
 import rasterio
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.colors as mcolors
+
+from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from risk_getters.enumerations import EnvironmentalRisk
 from risk_getters.riskInterfaces import RiskGetter
 from utility.constants import *
+
+
+class SeismicRiskGetter(RiskGetter, ABC):
+    pass
 
 class SeismicRiskMap(RiskGetter):
     ''' Return the seismic risk indicator for a specific location using a raster file representing the geographic map areas and associated risk values'''
@@ -165,6 +173,22 @@ class SeismicRiskMap(RiskGetter):
 
         # Show the plot
         plt.show()
+
+
+class SeismicRiskThAPI(SeismicRiskGetter):
+    ''' Class that return the seismic  risk by accessing the ThinkHazard API'''
+
+    def __init__(self, api: ThinkHazardAPI):
+        self.RISK_TYPE = "Earthquake"
+        self.api = api
+
+
+    def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
+        ''' Return the seismic risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
+
+        return self.api.get_risk_level(longitude, latitude, self.RISK_TYPE)
+
+
 
 
 def main():

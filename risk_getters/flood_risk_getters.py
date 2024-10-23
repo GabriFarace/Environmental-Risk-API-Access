@@ -5,7 +5,7 @@ from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
 from risk_getters.enumerations import EnvironmentalRisk
 from risk_getters.riskInterfaces import RiskGetter
-from api_interfaces import thinkhazard_API
+from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from utility.constants import *
 
 
@@ -99,13 +99,21 @@ class FloodRiskMap(FloodRiskGetter):
 class FloodRiskThAPI(FloodRiskGetter):
     ''' Class that return the flood risk by accessing the ThinkHazard API'''
 
-    def __init__(self):
-        self.RISK_TYPE = "River flood"
+    def __init__(self, api: ThinkHazardAPI):
+        self.RISK_TYPE_1 = "River flood"
+        self.RISK_TYPE_2 = "Urban flood"
+        self.api = api
 
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
         ''' Return the flood risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
 
-        return thinkhazard_API.get_risk_level(longitude, latitude, self.RISK_TYPE)
+        risk_1 = self.api.get_risk_level(longitude, latitude, self.RISK_TYPE_1)
+        risk_2 = self.api.get_risk_level(longitude, latitude, self.RISK_TYPE_2)
+
+        if risk_1.value > risk_2.value:
+            return risk_1
+        else:
+            return risk_2
 
 
 
