@@ -2,8 +2,8 @@ import rasterio
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.colors as mcolors
-from RiskGetters.enumerations import EnvironmentalRisk
-from RiskGetters.riskInterfaces import RiskGetter
+from risk_getters.enumerations import EnvironmentalRisk
+from risk_getters.riskInterfaces import RiskGetter
 from utility.constants import *
 
 class SeismicRiskMap(RiskGetter):

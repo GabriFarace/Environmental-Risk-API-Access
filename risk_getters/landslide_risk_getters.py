@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
-from RiskGetters.enumerations import EnvironmentalRisk
-from RiskGetters.riskInterfaces import RiskGetter
+from risk_getters.enumerations import EnvironmentalRisk
+from risk_getters.riskInterfaces import RiskGetter
 from utility.constants import *
 
 
