@@ -1,7 +1,8 @@
 import csv
 from api_interfaces.openwheather_API import get_coordinates
-from haversine import haversine, Unit
 from constants import *
+from haversine import haversine, Unit
+
 
 
 
@@ -31,14 +32,12 @@ def process_csv(input_csv: str, output_csv: str):
 
             #time.sleep(1)  # Sleep for 1 second between requests to avoid hitting API limits
 
-
-
-def find_closest_city(latitude: float, longitude: float, cities_file: str) -> tuple[str, str]:
+def find_closest_city(latitude: float, longitude: float) -> tuple[str, str]:
     ''' Return the closest city (and associated administrative unit code) to the geographical coordinates (longitude,latitude)'''
     closest_city = None
     min_distance = float('inf')  # Initialize with a very large number
 
-    with open(cities_file, 'r', newline='', encoding='utf-8') as file:
+    with open(CITIES_WITH_COORDINATES, 'r', newline='', encoding='utf-8') as file:
         reader = csv.reader(file, delimiter=';')
         next(reader)  # Skip the header row
 
@@ -59,16 +58,19 @@ def find_closest_city(latitude: float, longitude: float, cities_file: str) -> tu
     # Return the closest city's administrative unit 2 code and city name
     return closest_city
 
-def read_file_main():
-    input_csv = CITIES  # Input CSV file containing the cities
-    output_csv = CITIES_WITH_COORDINATES  # Output CSV file to store cities with coordinates
-    process_csv(input_csv, output_csv)
 
 def find_city_main():
     latitude = 45.611946 #Castellanza (Varese)
     longitude = 8.898276 #Castellanza (Varese)
     cities_file = CITIES_WITH_COORDINATES
-    print(find_closest_city(latitude, longitude, cities_file))
+    print(find_closest_city(latitude, longitude))
+
+
+def read_file_main():
+    input_csv = CITIES  # Input CSV file containing the cities
+    output_csv = CITIES_WITH_COORDINATES  # Output CSV file to store cities with coordinates
+    process_csv(input_csv, output_csv)
+
 
 # Main function to run the script
 if __name__ == '__main__':

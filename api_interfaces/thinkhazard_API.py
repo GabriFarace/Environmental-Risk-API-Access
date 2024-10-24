@@ -17,7 +17,7 @@ class ThinkHazardAPI:
         if  (longitude, latitude) not in self.current_data.keys():
 
             # Step 1: Find the closest city to the location given by (latitude, longitude) and get its ADM2 code
-            closest_city = find_closest_city(latitude, longitude, CITIES_WITH_COORDINATES)
+            closest_city = find_closest_city(latitude, longitude)
 
             if closest_city:
                 adm2_code, city_name = closest_city
