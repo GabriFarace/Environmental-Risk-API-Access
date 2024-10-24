@@ -1,5 +1,5 @@
 import requests
-from utility.constants import *
+from constants import *
 
 def get_coordinates(city: str, state: str, country: str)-> tuple:
     ''' Return the geographic coordinates (Latitude, Longitude) of a city by calling the Openweathermap API'''

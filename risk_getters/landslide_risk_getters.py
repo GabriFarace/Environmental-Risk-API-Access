@@ -4,7 +4,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
-from loaders import FilePathLoader, FilePathLoaderFromGdrive
+from utility.loaders import FilePathLoader
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
 from risk_getters.riskInterfaces import RiskGetter

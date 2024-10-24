@@ -4,7 +4,7 @@ import rasterio
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.colors as mcolors
-from loaders import FilePathLoader
+from utility.loaders import FilePathLoader
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
 from risk_getters.riskInterfaces import RiskGetter

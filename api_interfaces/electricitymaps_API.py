@@ -1,5 +1,5 @@
 import requests
-from utility.constants import *
+from constants import *
 
 
 def get_carbon_intensity(longitude, latitude):

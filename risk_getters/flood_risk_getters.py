@@ -6,7 +6,7 @@ from shapely.geometry import Polygon, Point
 from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
 from risk_getters.riskInterfaces import RiskGetter
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
-from loaders import FilePathLoader
+from utility.loaders import FilePathLoader
 
 class FloodRiskGetter(RiskGetter, ABC):
     pass

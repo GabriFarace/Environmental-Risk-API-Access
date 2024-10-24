@@ -1,8 +1,7 @@
 import csv
 from api_interfaces.openwheather_API import get_coordinates
 from haversine import haversine, Unit
-import time
-from utility.constants import *
+from constants import *
 
 
 

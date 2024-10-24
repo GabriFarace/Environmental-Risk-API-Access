@@ -2,7 +2,7 @@ import requests
 import threading
 from risk_getters.enumerations import *
 from utility.cities_coordinates import find_closest_city
-from utility.constants import *
+from constants import *
 
 
 class ThinkHazardAPI:

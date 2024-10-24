@@ -1,11 +1,11 @@
-from loaders import FilePathLoaderFromGdrive
+from utility.loaders import FilePathLoaderFromGdrive
 from risk_getters.riskInterfaces import RiskManager
-from risk_getters.seismic_risk_getters import SeismicRiskThAPI, SeismicRiskMap
-from risk_getters.landslide_risk_getters import LandslideRiskThAPI, LandslideRiskMap
-from risk_getters.flood_risk_getters import FloodRiskThAPI, FloodRiskMap
-from utility.constants import *
+from risk_getters.seismic_risk_getters import SeismicRiskMap
+from risk_getters.landslide_risk_getters import LandslideRiskMap
+from risk_getters.flood_risk_getters import FloodRiskMap
+from constants import *
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
-from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
+from risk_getters.enumerations import EnvironmentalRiskType
 
 
 def main():
