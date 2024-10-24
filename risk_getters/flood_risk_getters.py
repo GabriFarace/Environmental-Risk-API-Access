@@ -6,8 +6,7 @@ from shapely.geometry import Polygon, Point
 from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
 from risk_getters.riskInterfaces import RiskGetter
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
-from utility.constants import *
-
+from loaders import FilePathLoader
 
 class FloodRiskGetter(RiskGetter, ABC):
     pass
@@ -17,10 +16,10 @@ class FloodRiskGetter(RiskGetter, ABC):
 class FloodRiskMap(FloodRiskGetter):
     ''' Class that return the flood risk indicator for a specific location using 3 shapefile representing the low, medium and high risk geographic map areas '''
 
-    def __init__(self, map_path_low: str, map_path_medium: str, map_path_high: str):
-        self.map_low = gpd.read_file(map_path_low)
-        self.map_medium = gpd.read_file(map_path_medium)
-        self.map_high = gpd.read_file(map_path_high)
+    def __init__(self, file_data_low: str, file_data_medium: str, file_data_high: str, file_path_loader : FilePathLoader):
+        self.map_low = gpd.read_file(file_path_loader.load_path(file_data_low))
+        self.map_medium = gpd.read_file(file_path_loader.load_path(file_data_medium))
+        self.map_high = gpd.read_file(file_path_loader.load_path(file_data_high))
 
 
 
@@ -116,13 +115,4 @@ class FloodRiskThAPI(FloodRiskGetter):
             return risk_2
 
 
-
-def main():
-    risk_getter = FloodRiskMap(FLOOD_SHAPEFILE_PATH_LOW, FLOOD_SHAPEFILE_PATH_MEDIUM, FLOOD_SHAPEFILE_PATH_HIGH)
-    lat = 44.405650
-    lon = 8.946256
-    risk = risk_getter.get_risk(lon, lat)
-    print(f" Flood Risk Level: {risk.value}")
-
-    risk_getter.plot(lon, lat)
 

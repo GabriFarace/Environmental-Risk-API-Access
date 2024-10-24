@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-from typing import Dict, List
 from enumerations import EnvironmentalRiskType, EnvironmentalRisk
 
 class RiskGetter(ABC):
@@ -13,12 +12,12 @@ class RiskGetter(ABC):
 
 class RiskManager:
     ''' The Risk Manager deals with the different risk getters and return the risk indicators for each risk type'''
-    def __init__(self, risk_getters_per_type: Dict[EnvironmentalRiskType, List[RiskGetter]]):
+    def __init__(self, risk_getters_per_type: dict[EnvironmentalRiskType, list[RiskGetter]]):
 
         # For each risk type there is a list of list getters
         self.risk_getters_per_type = risk_getters_per_type
 
-    def get_indicators(self, longitude: float, latitude: float) -> Dict[EnvironmentalRiskType, EnvironmentalRisk]:
+    def get_indicators(self, longitude: float, latitude: float) -> dict[EnvironmentalRiskType, EnvironmentalRisk]:
         ''' Return the risk indicators, for each risk type, associated to the location with the given longitude and latitude.
             The RiskManager will try to take the risk indicator (level) for each risk type until the list ends. In these way the
             the manager can deal with getters that do not provide risk data for that particular location

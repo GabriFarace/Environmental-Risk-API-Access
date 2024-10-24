@@ -4,11 +4,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from numpy.ma.core import argmax
 from shapely.geometry import Polygon, Point
-
+from loaders import FilePathLoader, FilePathLoaderFromGdrive
 from api_interfaces.thinkhazard_API import ThinkHazardAPI
 from risk_getters.enumerations import EnvironmentalRisk, EnvironmentalRiskType
 from risk_getters.riskInterfaces import RiskGetter
-from utility.constants import *
 
 
 class LandslideRiskGetter(RiskGetter, ABC):
@@ -17,8 +16,10 @@ class LandslideRiskGetter(RiskGetter, ABC):
 class LandslideRiskMap(LandslideRiskGetter):
     ''' Return the landslide risk indicator for a specific location using a shapefile representing the geographic map areas and associated risk values'''
 
-    def __init__(self, map_path: str):
-        self.map = gpd.read_file(map_path)
+    def __init__(self, file_data: dict, file_path_loader: FilePathLoader):
+
+        # Get the geodataframe
+        self.map = gpd.read_file(file_path_loader.load_path(file_data))
 
         self.risk_levels = ['Aree di Attenzione AA', 'Moderata P1', 'Media P2', 'Elevata P3', 'Molto elevata P4']
         # Convert 'per_fr_ita' column to a categorical type with the defined order
@@ -107,14 +108,4 @@ class LandslideRiskThAPI(LandslideRiskGetter):
         return self.api.get_risk_level(longitude, latitude, self.RISK_TYPE)
 
 
-
-
-def main() :
-    risk_getter = LandslideRiskMap(LANDSLIDE_SHAPEFILE_PATH)
-    lat = 45.734955
-    lon = 7.313076
-    risk = risk_getter.get_risk(lon, lat)
-    print(f" Ladslide Risk Level: {risk.value}")
-
-    risk_getter.plot(lon, lat)
 
