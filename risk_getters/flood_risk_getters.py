@@ -95,24 +95,33 @@ class FloodRiskMap(FloodRiskGetter):
 
 
 
-class FloodRiskThAPI(FloodRiskGetter):
+class RiverFloodRiskThAPI(FloodRiskGetter):
     ''' Class that return the flood risk by accessing the ThinkHazard API'''
 
     def __init__(self, api: ThinkHazardAPI):
-        self.RISK_TYPE_1 = EnvironmentalRiskType.FLOOD_RIVER_RISK
-        self.RISK_TYPE_2 = EnvironmentalRiskType.FLOOD_URBAN_RISK
+        self.RISK_TYPE = EnvironmentalRiskType.FLOOD_RIVER_RISK
         self.api = api
 
     def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
         ''' Return the flood risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
 
-        risk_1 = self.api.get_risk_level(longitude, latitude, self.RISK_TYPE_1)
-        risk_2 = self.api.get_risk_level(longitude, latitude, self.RISK_TYPE_2)
+        risk = self.api.get_risk_level(longitude, latitude, self.RISK_TYPE)
 
-        if risk_1.value > risk_2.value:
-            return risk_1
-        else:
-            return risk_2
 
+        return risk
+
+class UrbanFloodRiskThAPI(FloodRiskGetter):
+    ''' Class that return the flood risk by accessing the ThinkHazard API'''
+
+    def __init__(self, api: ThinkHazardAPI):
+        self.RISK_TYPE = EnvironmentalRiskType.FLOOD_URBAN_RISK
+        self.api = api
+
+    def get_risk(self, longitude: float, latitude: float) -> EnvironmentalRisk:
+        ''' Return the flood risk of the geographic location given by (latitude, longitude) by accessing the ThinkHazard API'''
+
+        risk = self.api.get_risk_level(longitude, latitude, self.RISK_TYPE)
+
+        return risk
 
 

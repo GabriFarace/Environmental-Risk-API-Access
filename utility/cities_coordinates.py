@@ -4,6 +4,36 @@ from constants import *
 from haversine import haversine, Unit
 
 
+def process_csv_codes(input_csv: str, output_csv: str):
+    ''' Process the input csv and write the output csv which contains the coordinates for each city '''
+    with open(input_csv, 'r', newline='', encoding='utf-8') as infile, open(output_csv, 'w', newline='',
+                                                                            encoding='utf-8') as outfile:
+        # Read the CSV
+        reader = csv.reader(infile, delimiter=';')
+        writer = csv.writer(outfile, delimiter=';')
+
+        # read the code mapper csv
+        with open("../iso_3166_1_alpha_2.csv", 'r', newline='', encoding='utf-8') as codes_file:
+            # Read the CSV
+            reader_codes = csv.reader(codes_file, delimiter=',')
+            mapper = {}
+            for row in reader_codes:
+                country_name, code = row
+                mapper[country_name] = code
+
+
+        # Write the header for the output CSV
+        writer.writerow(['ADM2 Code', 'City', 'ADM1 Code', 'State', 'ADM0 Code', 'Country', 'Country Code'])
+
+        # Iterate through each row in the input CSV
+        for row in reader:
+            adm2_code, city, adm1_code, state, adm0_code, country = row
+
+            country_code = mapper.get(country, None)
+            if country_code is None:
+                print(f"No country code for the following country : {country}")
+            else:
+                writer.writerow([adm2_code, city, adm1_code, state, adm0_code, country, country_code])
 
 
 def process_csv(input_csv: str, output_csv: str):
@@ -74,4 +104,4 @@ def read_file_main():
 
 # Main function to run the script
 if __name__ == '__main__':
-    read_file_main()
+    process_csv_codes(CITIES, "cities_with_codes.csv")

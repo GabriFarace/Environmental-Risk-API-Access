@@ -19,7 +19,7 @@ class EnvironmentalRiskType(Enum):
 
 # THINK HAZARD MAP FROM THEIR TYPES TO ENUM TYPES
 HAZARD_LEVEL_ENUM_MAP = {"Very low": EnvironmentalRisk.VERY_LOW, "Low": EnvironmentalRisk.LOW,
-                              "Medium": EnvironmentalRisk.MEDIUM, "High": EnvironmentalRisk.HIGH}
+                              "Medium": EnvironmentalRisk.MEDIUM, "High": EnvironmentalRisk.HIGH, "No Data": EnvironmentalRisk.NO_DATA}
 HAZARD_TYPES_ENUM_MAP = {"River flood" : EnvironmentalRiskType.FLOOD_RIVER_RISK,
                          "Landslide" : EnvironmentalRiskType.LANDSLIDE_RISK,
                          "Urban flood" : EnvironmentalRiskType.FLOOD_URBAN_RISK,
